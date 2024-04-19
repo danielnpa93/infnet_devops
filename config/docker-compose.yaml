@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  # identity_api:
+  #   build:
+  #     context: .
+  #     dockerfile: dockerfile.identity.api
+  #   image: ecommerce_identity_api:latest
+  #   container_name: identity_api
+  #   ports:
+  #     - 5001:8080
+  #   depends_on:
+  #     - "db_identity"
+  #     - "rabbitmq"
+  #   links:
+  #     - "db_identity"
+  #   networks:
+  #     - ecommerce-network
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Development
+  #     ConnectionStrings__DefaultConnection: "Server=db_identity;Port=5432;Database=db_identity;User Id=user_identity;Password=NoT@S3Cr3T!;"
+  #     MessageQueueConnection__MessageBus: "host=rabbitmq:5672;username=admin;password=NoT@S3Cr3T!;publisherConfirms=true;timeout=10"
+  #     AppTokenSettings__RefreshTokenExpiration: "8"
+
+  db_identity:
+    image: postgres:12.18-alpine3.18
+    container_name: identity_db_postgres
+    volumes:
+      - "./.docker/identitydb/seed/seed_data.sql:/docker-entrypoint-initdb.d/seed_data.sql"
+    environment:
+      - POSTGRES_PASSWORD=NoT@S3Cr3T!
+      - POSTGRES_USER=user_identity
+      - POSTGRES_DB=db_identity
+    ports:
+      - 5433:5432
+    # networks:
+    #   - ecommerce-network
+
+    #   rabbitmq:
+    #     image: rabbitmq:3.12.13-alpine
+    #     container_name: rabbitmq_management
+    #     ports:
+    #       - 5672:5672
+    #     volumes:
+    #       - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+    #     environment:
+    #       - RABBITMQ_DEFAULT_USER=admin
+    #       - RABBITMQ_DEFAULT_PASS=NoT@S3Cr3T!
+    #     networks:
+    #       - ecommerce-network
+
+    # networks:
+    #   ecommerce-network:
+    #     driver: bridge
+    #     name: ecommerce-network

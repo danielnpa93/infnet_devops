@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-identidade
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: api-identidade
+  template:
+    metadata:
+      name: api-identidade
+      labels:
+        app: api-identidade
+    spec:
+      containers:
+      - env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: ConnectionStrings__DefaultConnection
+          value: Server=10.110.246.115;Port=5432;Database=db_identity;User Id=user_identity;Password=NoT@S3Cr3T!;
+        - name: AppTokenSettings__RefreshTokenExpiration
+          value: "8"
+        name: api-identidade
+        image: danielnpa93/ecommerce-identity-api:latest
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 20
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-identidade-node-port
+spec:
+  type: NodePort
+  selector:
+    app: api-identidade
+  ports:
+    - port: 8080
+      nodePort: 30001

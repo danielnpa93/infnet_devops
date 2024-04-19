@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jmeter
+  labels:
+    app: jmeter
+spec:
+  containers:
+  - name: jmeter
+    image: danielnpa93/jmeter:0.0.1
+
+

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: intitucional-service
+spec:
+  volumes:
+  type: NodePort
+  selector:
+    app: site-institucional
+  ports:
+  - protocol: TCP
+    nodePort: 30010
+    port: 80

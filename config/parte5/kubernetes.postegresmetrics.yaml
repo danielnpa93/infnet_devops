@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ecommerce-identity-db-exporter
+  labels:
+    app: db-exporter
+spec:
+  containers:
+  - env:
+    - name: DATA_SOURCE_NAME
+      value: "postgresql://user_identity:NoT@S3Cr3T!@10.244.0.55:5432/db_identity?sslmode=disable"
+    name: ecommerce-identity-db-exporter
+    image: prometheuscommunity/postgres-exporter:v0.13.1
+    ports:
+    - containerPort: 9187
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-exporter-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    app: db-exporter
+  ports: 
+  - protocol: TCP
+    port: 9187
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: db-exporter-node-port
+# spec:
+#   type: NodePort
+#   selector:
+#     app: db-exporter
+#   ports:
+#     - port: 9187
+#       nodePort: 30005

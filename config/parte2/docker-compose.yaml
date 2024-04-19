@@ -1,0 +1,71 @@
+version: '3.8'
+services:
+
+  prometheus:
+    image: prom/prometheus:latest
+      # context: .
+      # dockerfile: Dockerfile.prometheus
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    networks:
+      - ecommerce-network
+    depends_on:
+      - identity_api
+
+  grafana:
+    image: grafana/grafana-enterprise
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - ecommerce-network
+
+  identity_api:
+    image: danielnpa93/ecommerce-identity-api:latest
+    container_name: identity_api
+    ports:
+      - 5001:8080
+    depends_on:
+      - "db_identity"
+    links:
+      - "db_identity"
+    networks:
+      - ecommerce-network
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=db_identity;Port=5432;Database=db_identity;User Id=user_identity;Password=NoT@S3Cr3T!;"
+      AppTokenSettings__RefreshTokenExpiration: "8"
+
+  db_identity:
+    image: postgres:12.18-alpine3.18
+    container_name: identity_db_postgres
+    volumes:
+      - "./.docker/identitydb/seed/seed_data.sql:/docker-entrypoint-initdb.d/seed_data.sql"
+    environment:
+      - POSTGRES_PASSWORD=NoT@S3Cr3T!
+      - POSTGRES_USER=user_identity
+      - POSTGRES_DB=db_identity
+    ports:
+      - 5433:5432
+    networks:
+      - ecommerce-network
+
+  db_identity_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.13.1
+    container_name: db-exporter
+    environment:
+      - DATA_SOURCE_NAME="postgresql://user_identity:NoT@S3Cr3T!@db_identity:5432/db_identity?sslmode=disable"
+    networks:
+      - ecommerce-network
+    ports:
+      - 9187:9187
+    depends_on:
+      - db_identity
+
+networks:
+  ecommerce-network:
+    driver: bridge
+    name: ecommerce-network

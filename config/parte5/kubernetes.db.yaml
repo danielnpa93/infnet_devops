@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ecommerce-identity-db
+  labels:
+    database: identity-ecommerce
+spec:
+  volumes:
+  - name: db-volume
+    persistentVolumeClaim:
+      claimName: ecommerce-identity-db-pvc
+  containers:
+  - env:
+    - name: POSTGRES_PASSWORD
+      value: NoT@S3Cr3T!
+    - name: POSTGRES_USER
+      value: user_identity
+    - name: POSTGRES_DB
+      value: db_identity
+    name: ecommerce-identity-db
+    image: postgres:12.18-alpine3.18
+    ports:
+    - containerPort: 5432
+    volumeMounts:
+    - name: db-volume
+      mountPath: "/var/lib/postgresql/data"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-identity-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    database: identity-ecommerce
+  ports: 
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+
+

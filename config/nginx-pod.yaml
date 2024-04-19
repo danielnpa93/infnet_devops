@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: nginx #nome do pod
+  labels:
+    tier: frontend
+spec:
+  volumes: # criando um volume compartilhado
+  - name: logs-volume
+    emptyDir: {}
+  containers: 
+  # - name: nginx #nome do pod
+  #   image: nginx-fake
+  #   volumeMounts: 
+  #   - name: logs-volume
+  #     mountPath: /var/temp/logs
+  - name: nginx-fake2
+    image: nginx
+    # volumeMounts:
+    # - name: logs-volume
+    #   mountPath: /tmp/logs
+
+
+
+
+# kubectl apply -f nginx-pod.yaml
+# kubectl get pods --show-labels
+# kubectl get po -o wide
+# kubectl delete -f nginx-pod.yaml
+# kubectl run nginx2 --image-nginx --dry-run=client -o yaml > nginx2-pod.yaml
+# kubectl exec -it <pod> -- /bin/bash

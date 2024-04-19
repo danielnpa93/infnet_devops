@@ -1,0 +1,5 @@
+FROM justb4/jmeter
+COPY Ecommerce.jmx /opt/jmeter/bin/
+
+
+ENTRYPOINT [ "sleep","infinity" ]

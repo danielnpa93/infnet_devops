@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-identity-api
+  labels:
+    product: ecommerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels: 
+      app: api-identidade
+  template: 
+    metadata:
+      name: ecommerce-identity-api
+      labels:
+        app: api-identidade
+    spec:
+      containers:
+      - env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: ConnectionStrings__DefaultConnection
+          value: "Server=10.105.231.164;Port=5432;Database=db_identity;User Id=user_identity;Password=NoT@S3Cr3T!;"
+        - name: MessageQueueConnection__MessageBus
+          value: "host=rabbitmq:5672;username=admin;password=NoT@S3Cr3T!;publisherConfirms=true;timeout=10"
+        - name: AppTokenSettings__RefreshTokenExpiration
+          value: "8"
+        name: ecommerce-identity-api
+        image: danielnpa93/ecommerce-identity-api:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

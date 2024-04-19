@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: ClusterIP #associa para um;; tem o node tb
+  selector: 
+    tier: frontend
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
+
+
+#kubectl get services
